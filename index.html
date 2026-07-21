@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Gerador de Assinatura R3</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f5f5f5;
+    padding:20px;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    background:#fff;
+    padding:25px;
+    border-radius:8px;
+    box-shadow:0 2px 10px rgba(0,0,0,.1);
+}
+
+label{
+    display:block;
+    margin-top:10px;
+    margin-bottom:5px;
+}
+
+input{
+    width:100%;
+    padding:10px;
+    box-sizing:border-box;
+}
+
+button{
+    margin-top:15px;
+    margin-right:10px;
+    padding:12px 20px;
+    background:#0B3B88;
+    color:#fff;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+canvas{
+    width:100%;
+    margin-top:20px;
+    border:1px solid #ddd;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Gerador de Assinatura R3</h2>
+
+<label>Nome Completo</label>
+<input
+    id="nome"
+    required
+>
+
+<label>Cargo / Departamento</label>
+<input
+    id="cargo"
+    required
+>
+
+<label>Celular</label>
+
+<input
+    id="celular"
+    maxlength="16"
+    placeholder="+55 (62) 9 9999-9999"
+    oninput="mascaraCelular(this)"
+    required
+>
+
+<label>E-mail</label>
+
+<input
+    id="email"
+    type="email"
+    placeholder="nome.sobrenome@r3suprimentos.com.br"
+    required
+>
+
+<button onclick="gerarImagem()">
+Gerar Assinatura
+</button>
+
+<button onclick="baixarImagem()">
+Baixar PNG
+</button>
+
+<canvas id="canvas"></canvas>
+
+</div>
+
+<script>
+
+const canvas =
+document.getElementById("canvas");
+
+const ctx =
+canvas.getContext("2d");
+
+let imagemGerada = false;
+
+function mascaraCelular(campo){
+
+    let valor =
+    campo.value.replace(/\D/g,'');
+
+    valor =
+    valor.substring(0,11);
+
+    let resultado = '';
+
+    if(valor.length >= 1){
+        resultado =
+        '(' + valor.substring(0,2);
+    }
+
+    if(valor.length >= 3){
+        resultado +=
+        ') ' +
+        valor.substring(2,3);
+    }
+
+    if(valor.length >= 4){
+        resultado +=
+        ' ' +
+        valor.substring(3,7);
+    }
+
+    if(valor.length >= 8){
+        resultado +=
+        '-' +
+        valor.substring(7,11);
+    }
+
+    campo.value = resultado;
+}
+
+function gerarImagem(){
+
+    const nome =
+    document.getElementById("nome")
+    .value
+    .trim();
+
+    const cargo =
+    document.getElementById("cargo")
+    .value
+    .trim();
+
+    const email =
+    document.getElementById("email")
+    .value
+    .trim();
+
+    const telefoneNumerico =
+    document.getElementById("celular")
+    .value
+    .replace(/\D/g,'');
+
+    if(nome === ""){
+        alert("Informe o Nome Completo.");
+        return;
+    }
+
+    if(cargo === ""){
+        alert("Informe o Cargo / Departamento.");
+        return;
+    }
+
+    if(telefoneNumerico.length !== 11){
+        alert("Informe um celular com 11 dígitos.");
+        return;
+    }
+
+    if(email === ""){
+        alert("Informe o E-mail.");
+        return;
+    }
+
+    const emailRegex =
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if(!emailRegex.test(email)){
+        alert("Informe um e-mail válido.");
+        return;
+    }
+
+    const img = new Image();
+
+    img.onload = function(){
+
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        ctx.clearRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+        ctx.drawImage(
+            img,
+            0,
+            0
+        );
+
+        const telefone =
+        document.getElementById("celular")
+        .value;
+
+        /* NOME */
+
+        ctx.fillStyle = "#0B3B88";
+        ctx.font = "bold 52px Arial";
+
+        ctx.fillText(
+            nome,
+            600,
+            145
+        );
+
+        /* CARGO */
+
+        ctx.fillStyle = "#666666";
+        ctx.font = "28px Arial";
+
+        ctx.fillText(
+            cargo,
+            600,
+            200
+        );
+
+        /* CELULAR */
+
+        ctx.fillStyle = "#666666";
+        ctx.font = "24px Arial";
+
+        ctx.fillText(
+            "+55 " + telefone,
+            600,
+            270
+        );
+
+        /* TELEFONE FIXO */
+
+        ctx.fillText(
+            "+55 (62) 3946-2100",
+            600,
+            305
+        );
+
+        /* EMAIL */
+
+        ctx.fillStyle = "#0B3B88";
+        ctx.font = "22px Arial";
+
+        ctx.fillText(
+            email,
+            600,
+            350
+        );
+
+        imagemGerada = true;
+
+    };
+
+    img.onerror = function(){
+
+        alert(
+            "Arquivo assinatura.png não encontrado."
+        );
+
+    };
+
+    img.src = "assinatura.png";
+
+}
+
+function baixarImagem(){
+
+    if(!imagemGerada){
+
+        alert(
+            "Primeiro clique em Gerar Assinatura."
+        );
+
+        return;
+    }
+
+    const link =
+    document.createElement("a");
+
+    link.download =
+    "Assinatura-R3.png";
+
+    link.href =
+    canvas.toDataURL("image/png");
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+
+}
+
+</script>
+
+</body>
+
+</html>
