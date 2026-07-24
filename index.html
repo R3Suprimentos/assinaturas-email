@@ -82,7 +82,6 @@ canvas{
     maxlength="16"
     placeholder="+55 (62) 9 9999-9999"
     oninput="mascaraCelular(this)"
-    required
 >
 
 <label>E-mail</label>
@@ -184,10 +183,6 @@ function gerarImagem(){
         return;
     }
 
-    if(telefoneNumerico.length !== 11){
-        alert("Informe um celular com 11 dígitos.");
-        return;
-    }
 
     if(email === ""){
         alert("Informe o E-mail.");
@@ -245,38 +240,55 @@ function gerarImagem(){
         ctx.fillText(
             cargo,
             600,
-            200
+            180
         );
 
-        /* CELULAR */
+        /***********************
+ * TELEFONES
+ ************************/
 
-        ctx.fillStyle = "#666666";
-        ctx.font = "24px Arial";
+ctx.fillStyle = "#666666";
+ctx.font = "24px Arial";
 
-        ctx.fillText(
-            "+55 " + telefone,
-            600,
-            270
-        );
+let posicaoEmail = 350;
 
-        /* TELEFONE FIXO */
+if (telefone.trim() !== "") {
 
-        ctx.fillText(
-            "+55 (62) 3946-2100",
-            600,
-            305
-        );
+    ctx.fillText(
+        "+55 " + telefone,
+        600,
+        285
+    );
 
-        /* EMAIL */
+    ctx.fillText(
+        "+55 (62) 3946-2100",
+        600,
+        250
+    );
 
-        ctx.fillStyle = "#0B3B88";
-        ctx.font = "22px Arial";
+} else {
 
-        ctx.fillText(
-            email,
-            600,
-            350
-        );
+    ctx.fillText(
+        "+55 (62) 3946-2100",
+        600,
+        290
+    );
+
+    posicaoEmail = 315;
+}
+
+/***********************
+ * EMAIL
+ ************************/
+
+ctx.fillStyle = "#0B3B88";
+ctx.font = "22px Arial";
+
+ctx.fillText(
+    email,
+    600,
+    posicaoEmail
+);
 
         imagemGerada = true;
 
